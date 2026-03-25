@@ -49,3 +49,25 @@ After aggregation, we obtain several variable categories for analysis.
   - Identify the influence on the target variable
 
 ## Exploritary Data Analysis 
+- A. Plotting target variable
+  - Frequency Plot
+  ![Frequency Plot 2024 - 2025](image/freq_img.png)
+  - Severity Plot
+  ![Severity Plot 2024 - 2025](image/sev_img.png)
+- B. Moving Avarage(SMA & EMA)
+  - Frequency Moving Avarage
+  ![Frequency Moving Avarage Plot 2024 - 2025](image/freq_ma.png)
+  - Severity Moving Avarage
+  ![Severity Plot 2024 - 2025](image/sev_ma.png)
+- C. Time Series Analysis
+In this section, we analyze the trend and seasonality of the target variable data. The frequency and severity patterns appear quite volatile for the 2024-2025 period. The methods used for trend analysis are Simple Moving Average and Exponential Moving Average, with SMA(4) and EMA(4). This means we use a moving average with a period of 4 weeks, or approximately one month. This method helps smooth out the volatility of the data.
+  - Trend Analysis:
+    1. Frequency Analysis:
+    The frequency values ​​are mostly in the range of 50-70 claims per week. Some spikes in the original data do not significantly change the direction of the SMA and EMA. The frequency trend tends to be stable from 2024 to mid-2025.
+    2. Severity Analysis:
+    The high spike in early 2025 was likely caused by a large number of claims, but the SMA and EMA lines returned to normal ranges after the spike. The severity trend was relatively stable, but there were several outliers with very high claim values.
+  - Seasonal Decomposition Analysis:
+    1. Frequency seasonal decomposition
+    ![Seasonal Decomposition Frequency](image/seasonaldecompose_freq.png)
+    2. Severity seasonal decomposition
+    ![Seasonal Decomposition Severity](image/seasonaldecompose_sev.png)
