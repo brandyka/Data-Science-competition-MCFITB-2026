@@ -69,5 +69,93 @@ In this section, we analyze the trend and seasonality of the target variable dat
   - Seasonal Decomposition Analysis:
     1. Frequency seasonal decomposition
     ![Seasonal Decomposition Frequency](image/seasonaldecompose_freq.png)
+    The analysis reveals a seasonal pattern in claims in week 3, which has consistently peaked over several months. Conversely, week 2 shows a relatively high reflex rate. While there are indications of an upward trend in week 3, the overall strength of the seasonal pattern remains limited due to significant data variability and a relatively stable trend. This seasonal pattern is reinforced by the graph and boxplot below. 
+    ![Seasonal Frequency](image/seasonfreq.png)
+    ![Seasonal Frequency](image/seasonfreq2.png)
+    ![Seasonal Frequency](image/boxfreq.png)
     2. Severity seasonal decomposition
     ![Seasonal Decomposition Severity](image/seasonaldecompose_sev.png)
+    The analysis indicates that claim severity tends to reach a higher value in week 3, reflecting an increase in claim intensity in the middle of the month. Subsequently, a decline occurs in week 4. This pattern aligns with the seasonal in claim frequency, which also shows an increase in week 3. This is similar to the movement from frequency to likelihood, as frequency is a driver of claim severity.
+    ![Seasonal Severity](image/seasonsev.png)
+    ![Seasonal Severity](image/seasonsev2.png)
+    ![Seasonal Severity](image/boxsev.png)
+
+## Stationarity Check 
+Based on the results of the Augmented Dickey-Fuller (ADF) test, the ADF statistic obtained a significantly negative value and a p-value close to zero for both variables. This indicates the rejection of the null hypothesis stating the presence of a unit root. Therefore, the data can be categorized as stationary at the level, thus fulfilling the basic assumptions of time series analysis without the need for additional transformations such as differencing.
+![Stationarity check](image/stationarity.png)
+
+## Autocorrelation (ACF & PACF)
+- Frequency ACF and PACF
+![ACF Frequency](image/acffreq.png)
+![PACF Frequency](image/pacffreq.png)
+Almost all lags are in the confidence interval except lag 17 on 
+This PACF is probably noise, in this case it means past values 
+has no correlation with current values
+
+- Severity ACF and PACF
+![ACF Sev](image/acfsev.png)
+![PACF Sev](image/pacfsev.png)
+Lags 1 & 2 in ACF and lag 1 in PACF are slightly out of confidence 
+interval indicates weak correlation at lags 1 and 2 with the mass value 
+Now
+
+The results of autocorrelation using ACF and PACF will be used to adjust the parameters of traditional time series models such as ARIMA or SARIMAX. ACF is used to adjust MA and PACF is used to adjust AR for the model parameters.
+
+## Exogeneous variable analysis 
+This section examines whether demographic variables, health services, and hospital costs (exog variables) influence the frequency and severity values. In other words, whether the exog variable series influences the present value.
+This test uses the Granger causality method.
+- a. Frequency
+Based on the results of the Granger Causality test, several variables showed a significant effect on claim frequency, with a p-value <0.05. The week_of_month variable at lag 1 showed a time-of-month pattern on claim frequency, indicating a weekly seasonal pattern in the number of claims. Furthermore, the pct_male variable at lag 1 also had a significant effect, indicating that changes in the proportion of male participants were associated with changes in claim frequency. Another significant variable was pct_genitourinaria at lags 1 and 2, indicating that an increase in the percentage of genitourinary disease claims could influence changes in claim frequency over the next two time periods. This suggests that specific disease types may be a contributing factor to the dynamics of claim frequency.
+- b Severity
+Based on a p-value < 0.05, only one variable has a significant effect on severity, namely: avg_age (lag 1)
+with a p-value ≈ 0.0317.
+The average participant age variable has a significant relationship with changes in claim severity. This indicates that changes in average participant age in the previous period can affect the average claim cost in the subsequent period.
+
+## Feature Engineering and Data Preprocessing
+In this section, we perform feature engineering and preprocessing for the data we will use to train the model. Here, we perform feature selection from the EDA results for each target, such as the frequency we use for the variables week and pct_genitourinaria. We also create a few temporal features to aid model training, such as 'month', 'week_of_year', and 'quarter', due to their autocorrelation results being within the confidence interval. We also use the frequency we use for the features 'avg_age', 'month', 'week_of_year', and 'quarter'. This data will be used to train a traditional time series model, namely SARIMAX.
+
+Preparing time series data requires a different approach than with conventional data, as conventional machine learning models do not inherently consider time sequences. Therefore, feature engineering is performed by adding lag features, which use values ​​from previous periods as predictors, and rolling features to capture short-term trends.
+However, given the relatively low level of autocorrelation, lag selection needs to be limited to avoid introducing noise into the model. In this case, small lags such as lag-1, lag-2, and lag-4 are used, along with a rolling window of 4 periods, to maintain a balance between historical information and model stability.
+Meanwhile, classic time series models like SARIMAX intrinsically accommodate lag components and are specifically designed to handle temporal dependencies, eliminating the need for explicit lag feature additions as in common machine learning models.
+
+## Modelling 
+The models used in this experiment include SARIMAX with parameters (0,0,0) or AR(0) and MA(0), SARIMAX(0,0,1)AR(0)
+MA(1) for frequency and SARIMAX(1,0,1) AR(1) MA(1) for severity, as well as several machine learning models such as Randomforest and LightBM. Exogenous variables are used to aid model prediction.
+- Training Result;
+  - SARIMAX(0,0,0) (Frequency)
+  ![SARIMAX000](image/sarimax000.png)
+  - SARIMAX(0,0,0) (Severity)
+  ![SARIMAX000](image/sarimax000sev.png)
+  - SARIMAX (0,0,1) (Frequency)
+  ![SARIMAX001](image/sarimax001freq.png)
+  - SARIMAX (1,0,1) (Severity)
+  ![SARIMAX000](image/sarimaxsev101.png)
+  - RandomForest
+  ![SARIMAX000](image/rf.png)
+  - LightGBM
+  ![SARIMAX000](image/lgbm.png)
+
+## Evaluation
+The training results of several models, SARIMAX with parameters (0.0.0) and LightBM, obtained the lowest MAPE scores among the others, namely SARIMAX 9.9% and LightBM 8.8% in predicting the August-December 2026 period.
+
+## Conclusion
+- Identifying Factors Influencing Claims and Severity
+
+Based on the modeling, factors influencing claim frequency and severity can be distinguished based on the exogenous variables used.
+For claim frequency, influential variables include week of the month (week 2, week 3, week 4), which indicates a pattern of claim variation within a single monthly period. Furthermore, health factors such as the percentage of genitourinary disease cases contribute to the increase in the number of claims. Time variables such as month, quarter, and week of year are also used to capture seasonal patterns and long-term trends.
+
+Meanwhile, for claim severity, the main influencing factor is participant characteristics, particularly average age (avg_age), which is related to risk level and treatment costs. Furthermore, week of the month (week 1 and week 4), as well as seasonal variables (month, quarter), and time trends (week of year) also contribute to explaining variations in claim costs.
+
+Overall, claim frequency is more influenced by temporal factors and disease type, while claim severity is more influenced by participant characteristics, while still considering seasonal patterns and time trends.
+
+- Recommendations for Claims Risk Management Initiatives
+
+Based on the identified factors, several strategies can be implemented to control claims risk and maintain premium stability.
+From a risk selection perspective, the influence of age on claim severity demonstrates the importance of segmenting participants based on risk profile. Companies can implement age-based portfolio management and strengthen the underwriting process for participants with high health risks.
+
+From a preventive strategy perspective, the influence of genitourinary diseases on claim frequency indicates the need for more targeted health programs, such as education, regular check-ups, and healthy lifestyle promotion to reduce potential claims.
+Furthermore, the pattern of increased claims in the third week can be used as a basis for improved operational monitoring, so companies can be better prepared for potential spikes in claims.
+
+From an early detection perspective, the use of time-series predictive models such as SARIMAX can help project increases in claims. This allows companies to implement early mitigation measures, such as claims audits, increased healthcare monitoring, and interventions for high-risk groups.
+Overall, a combination of risk selection, prevention, and predictive analytics strategies can help control claims growth and keep premiums competitive and affordable.
+
