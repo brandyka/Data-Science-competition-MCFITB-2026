@@ -86,6 +86,7 @@ Based on the results of the Augmented Dickey-Fuller (ADF) test, the ADF statisti
 
 ## Autocorrelation (ACF & PACF)
 - Frequency ACF and PACF
+  
 ![ACF Frequency](image/acffreq.png)
 ![PACF Frequency](image/pacffreq.png)
 Almost all lags are in the confidence interval except lag 17 on 
@@ -93,6 +94,7 @@ This PACF is probably noise, in this case it means past values
 has no correlation with current values
 
 - Severity ACF and PACF
+  
 ![ACF Sev](image/acfsev.png)
 ![PACF Sev](image/pacfsev.png)
 Lags 1 & 2 in ACF and lag 1 in PACF are slightly out of confidence 
